@@ -70,6 +70,53 @@ app.get('/product/:brand_name', async (req, res) => {
             res.send(result);
         })
 
+        
+        // code 5 put or update
+        app.put('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedProduct = req.body;
+            const product = {
+                $set: {
+                    name: updatedProduct.name,
+                    brand_name: updatedProduct.brand_name,
+                    type: updatedProduct.type,
+                    price: updatedProduct.price,
+                    description: updatedProduct.description,
+                    rating: updatedProduct.rating,
+                    photo: updatedProduct.photo
+
+                }
+            }
+            const result = await productCollection.updateOne(filter, product, options)
+            res.send(result);
+        })
+
+
+        //  cart server
+        const cartCollection = client.db("productDB").collection("cart")
+
+        // get all cart
+        app.get('/cart', async (req, res) => {
+            const cursor = cartCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        app.get('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await cartCollection.findOne(query);
+            res.send(result);
+        })
+        // add cart
+        app.post('/cart', async (req, res) => {
+            const dataToSend = req.body;
+            console.log(dataToSend);
+            const result = await cartCollection.insertOne(dataToSend);
+            res.send(result);
+        })
 
 
 app.get('/', (req, res) => {
