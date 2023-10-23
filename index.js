@@ -44,6 +44,32 @@ async function run() {
             res.send(result);
         })
 
+        
+
+       
+        // app.get('/product/:brand_name', async (req, res) => {
+        //     const brand_name = req.params.brand_name;
+        //     const query = { brand_name: brand_name }
+        //     const result = await productCollection.find(query);
+        //     res.send(result);
+        // })
+       
+app.get('/product/:brand_name', async (req, res) => {
+    const brand_name = req.params.brand_name;
+    const query = { brand_name: brand_name };
+    const result = await productCollection.findOne(query); // Convert the result to an array
+    res.send(result);
+})
+
+
+        // code1 add product
+        app.post('/product', async (req, res) => {
+            const newProduct = req.body;
+            console.log(newProduct);
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result);
+        })
+
 
 
 app.get('/', (req, res) => {
