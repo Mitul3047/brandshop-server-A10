@@ -23,9 +23,11 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const productCollection = client.db("productDB").collection("Product")
+
+
 
 
         // code 2 get all product
@@ -35,31 +37,38 @@ async function run() {
             res.send(result)
         })
 
-         // code for find
+        // code for find
 
-         app.get('/product/:id', async (req, res) => {
+        app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await productCollection.findOne(query);
             res.send(result);
         })
-
-        
-
-       
         // app.get('/product/:brand_name', async (req, res) => {
         //     const brand_name = req.params.brand_name;
         //     const query = { brand_name: brand_name }
         //     const result = await productCollection.find(query);
         //     res.send(result);
         // })
-       
-app.get('/product/:brand_name', async (req, res) => {
-    const brand_name = req.params.brand_name;
-    const query = { brand_name: brand_name };
-    const result = await productCollection.findOne(query); // Convert the result to an array
-    res.send(result);
-})
+
+        // app.get('/product/:brandName', async (req, res) => {
+        //     const brandName = req.params.brandName;
+        //     console.log('solo',brandName);
+        //     const query = { brand_name: brandName };
+        //     const result = await productCollection.findOne(query) // Convert the result to an array
+        //     res.send(result);
+        // })
+        app.get('/product/by-brand/:brand_name', async (req, res) => {
+            const brandname = req.params.brand_name;
+            console.log('brand name', brandname);
+            const query = { brand_name: { $regex: new RegExp(brandname, 'i') } };
+            const result = await productCollection.findOne(query);
+
+            res.send(result);
+            console.log('brand name res', result);
+        })
+
 
 
         // code1 add product
@@ -69,8 +78,6 @@ app.get('/product/:brand_name', async (req, res) => {
             const result = await productCollection.insertOne(newProduct);
             res.send(result);
         })
-
-        
         // code 5 put or update
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
@@ -117,7 +124,6 @@ app.get('/product/:brand_name', async (req, res) => {
             const result = await cartCollection.insertOne(dataToSend);
             res.send(result);
         })
-
         // delete cart
         app.delete('/cart/:id', async (req, res) => {
             const id = req.params.id;
@@ -141,14 +147,12 @@ app.get('/product/:brand_name', async (req, res) => {
 }
 run().catch(console.dir);
 
+
+
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello from tech guru server side!')
 })
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-
-
-
-
